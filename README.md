@@ -5,7 +5,7 @@ This solution starts with a specflow assembly, creates a nant build file (using 
 
 * there are no concurrency violation possibilities between tests.  eg, you can't have two specflow tests that trample on the same database records, things like that.
 * the better you distribute your test Fixtures across namespaces, the better this will (hopefully) work.  The nant script will spawn a thread per namespace (with thread count throttled by config), so namespaces with a large number of tests will take a longer time to run.
-* your tests don't break something in the specflow engine.  It's not quite clear why specflow doesn't just run in parallel (but it looks like they charge money for a tool that enables it), but it seems to have something to do with ScenarioContext.Current being a singleton?  Here's some info I found on that:
+* your tests don't break something in the specflow engine.  It's not quite clear why specflow doesn't just run in parallel (it looks like they charge money for a tool that enables it), but it seems to have something to do with ScenarioContext.Current being a singleton?  Here's some info I found on that:
   * http://elegantcode.com/2013/08/30/some-new-features-for-specflow-and-specrun/
   * https://github.com/techtalk/SpecFlow/issues/180
 

@@ -1,0 +1,81 @@
+﻿<#@ template  debug="true" hostSpecific="true" #>
+<#@ output extension=".cs" #>
+<#@ Assembly Name="System.Core" #>
+<#@ Assembly Name="System.Windows.Forms" #>
+<#@ import namespace="System" #>
+<#@ import namespace="System.IO" #>
+<#@ import namespace="System.Diagnostics" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Collections" #>
+<#@ import namespace="System.Collections.Generic" #><?xml version="1.0"?>
+<project name="Execute All" default="tests.unit.run" basedir=".">
+    <target name="tests.unit.run" description="Run unit tests">
+			<parallelexec>
+<# foreach(var testNs in Namespaces) { #>
+				<exec program="C:\Program Files (x86)\NUnit 2.6.4\bin\nunit-console.exe" workingdir="C:\Apps\repos-ascendon-core\ContentDirect\CoreService\Bin" commandline="ContentDirect.CoreService.Features.dll  /fixture:<#=testNs#> /xml:<#=TestOutputDirectory#>\\<#=testNs#>.TestResults.xml /nologo"/>
+<# } #>
+  			</parallelexec>
+	</target>	
+
+ <script language="C#" prefix="directory">
+    <code>
+      <![CDATA[
+    [TaskName("parallelexec")]
+    public class ParallelExecTask : TaskContainer
+    {
+
+        [BuildElementArray("exec", Required = true, ElementType = typeof(NAnt.Core.Tasks.ExecTask))]
+        public NAnt.Core.Tasks.ExecTask[] ExecTasks { get; set; }
+ 
+        [TaskAttribute("threadcount")]
+        public int ThreadCount { get; set; }
+ 
+        protected override void ExecuteTask()
+        {
+            var parallelOptions = new System.Threading.Tasks.ParallelOptions();
+ 
+            if (ThreadCount > 0)
+            {
+                parallelOptions.MaxDegreeOfParallelism = ThreadCount;
+                Log(Level.Verbose, string.Format("Executing in parallel using at most {0} threads...", ThreadCount));
+            }
+            else
+            {
+                Log(Level.Verbose, string.Format("Executing in parallel using at most {0} threads...", ThreadCount));
+            }
+ 
+            try
+            {
+                System.Threading.Tasks.Parallel.ForEach(ExecTasks, parallelOptions, Body);
+            }
+            catch (AggregateException e)
+            {
+                foreach (Exception innerException in e.InnerExceptions)
+                {
+                    if (innerException is BuildException)
+                        Log(Level.Error, innerException.Message);
+                    else
+                        throw innerException;
+                }
+                throw new BuildException("Parallel execution failed for " + e.InnerExceptions.Count + " of " + ExecTasks.Length + " commands executions (see the above log).", Location);
+            }
+        }
+ 
+        private void Body(NAnt.Core.Tasks.ExecTask execTask)
+        {
+            try
+            {
+                execTask.Execute();
+            }
+            catch (BuildException e)
+            {
+                throw new BuildException("External Program Failed: " + execTask.ProgramFileName + " " + execTask.CommandLine + " (return code was " + execTask.ExitCode + ")", e);
+            }
+        }
+    }
+    ]]>
+    </code>
+  </script>
+
+
+</project>

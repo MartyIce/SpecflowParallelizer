@@ -1,7 +1,7 @@
 # SpecflowParallelizer
 
 ## Overview
-This solution starts with a specflow assembly, creates a nant build file (using .Net) that uses nunit to run a unit tests in parallel.  This *can* give you a better Specflow experience, provided:
+This solution starts with a specflow assembly, creates a nant build file (using .Net) that uses nunit to run a unit tests in parallel.  This *possibly* will give you a better Specflow experience, provided:
 
 * no concurrency violation possibilities between tests.  For example, you can't have two specflow tests that trample on the same database records, etc.
 * the better you distribute your test Fixtures across namespaces, the better this will probably work.  The logic spawns a thread per namespace (with thread count throttled by config), so Namespaces with a large number of tests will take a longer time to run.

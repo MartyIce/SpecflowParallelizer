@@ -7,7 +7,7 @@ This solution starts with a specflow assembly, creates a nant build file (using 
 * the better you distribute your test Fixtures across namespaces, the better this will (hopefully) work.  The nant script will spawn a thread per namespace (with thread count throttled by config), so namespaces with a large number of tests will take a longer time to run.
 * your tests don't break something in the specflow engine.  It's not quite clear why specflow doesn't just run in parallel (but it looks like they charge money for a tool that enables it), but it seems to have something to do with ScenarioContext.Current being a singleton?  Here's some info I found on that:
   * http://elegantcode.com/2013/08/30/some-new-features-for-specflow-and-specrun/
-  * http://elegantcode.com/2013/08/30/some-new-features-for-specflow-and-specrun/
+  * https://github.com/techtalk/SpecFlow/issues/180
 
 I started playing around with this idea, and while it didn't (hasn't) worked out yet for my project, I was hoping people might get some use out of it (and improve it).  For the tests I'm trying to parallelize, it completely pegs my 8 cores (whereas just running the assembly as a whole, serially, really doesn't tax my CPU much at all).  It doesn't work for me because I get a ton of concurrency violations from Elasticsearch (the underlying tests weren't written with concurrency in mind, and trample data).  Hopefully you have a better experience...
 

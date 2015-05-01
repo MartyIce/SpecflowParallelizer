@@ -1,4 +1,4 @@
-# SpecflowParallelizer
+# Specflow Parallelizer
 
 ## Overview
 This solution starts with a specflow assembly, creates a nant build file (using .Net) that uses nunit to run a unit tests in parallel.  This *possibly* will give you a better Specflow experience, provided:
